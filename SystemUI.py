@@ -22,11 +22,12 @@ red = '#ff6e6e'
 yellow = "#feffa6"
 green = "#b0ffa1"
 
-
+# Turn on relay only for measurement, then off
 
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
-        self.controller, self.aout = init_controller()
+        self.controller, self.tdac = init_controller()
+        clamp(self.tdac)
         self.running = False
 
         self.voltages = []
@@ -81,10 +82,19 @@ class Application(tk.Tk):
         frame.tkraise()
         self.update()
 
+    def relay(self, v):
+        # Set to high to close, low to open
+        self.controller.setDOState(2, state = v)
+
+    def make_copier(self, row):
+        return lambda: self.copy_row(row)
+
     def reg_read(self, rapid):
         if(self.running):
             print("running")
             return
+        # Close the relay
+        self.relay(1)
         self.running = True
         if(not self.ready):
             self.frames[Start_Page].label['text'] = 'No parameters set'
@@ -123,7 +133,7 @@ class Application(tk.Tk):
             print(('Step %s' % counter))
             self.frames[Start_Page].label['text'] = 'Step %s' % counter
             self.frames[Start_Page].label['bg'] = yellow
-            setVoltage(self, self.controller, self.aout, v)
+            setVoltage(self.tdac, v)
             per_sec(self, self.controller, t, start_time, graph_times, 
                     graph_pressure,
                     self.gdl_tpr[i], graph_gdltpr, graph_tpr, graph_cr)
@@ -147,10 +157,10 @@ class Application(tk.Tk):
             self.update()
             counter += 1
 
-        elapsed = time.time() - start_time
-        intended = sum(times)
-        print(intended, elapsed)
-        print('off by' + str((elapsed-intended)/intended))
+        # elapsed = time.time() - start_time
+        # intended = sum(times)
+        # print(intended, elapsed)
+        # print('off by ' + str((elapsed-intended)/intended))
 
         self.frames[Start_Page].graph(graph_times, 
                                       graph_pressure,
@@ -158,7 +168,9 @@ class Application(tk.Tk):
         self.frames[Start_Page].label['text'] = 'Done'
         self.frames[Start_Page].label['bg'] = green
         self.running = False
-        clamp(self.aout)
+        # Open the relay
+        self.relay(0)
+        clamp(self.tdac)
         # self.frames[Start_Page].save_to_file()
         self.update()
 
@@ -171,7 +183,7 @@ class Application(tk.Tk):
         self.running = False
         self.frames[Start_Page].label['text'] = "Ready" 
         self.frames[Start_Page].label['bg'] = green
-        clamp(self.aout)
+        clamp(self.tdac)
         self.update()
 
 app = Application()

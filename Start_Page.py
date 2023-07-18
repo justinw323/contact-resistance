@@ -13,6 +13,7 @@ from tkinter.scrolledtext import ScrolledText
 from tkinter import filedialog
 
 from Table_Entry import *
+from controller import *
 
 red = '#ff6e6e'
 yellow = "#feffa6"
@@ -21,6 +22,7 @@ green = "#b0ffa1"
 class Start_Page(tk.Frame):
     def __init__(self, container, app, ready):
         tk.Frame.__init__(self, container)
+        self.winfo_toplevel().title("Contact Resistance")
 
         self.ready = ready
         self.app = app
@@ -35,7 +37,7 @@ class Start_Page(tk.Frame):
 
         enter_params = ttk.Button(self, text = "Parameters", command = 
                                 app.show_table)
-        enter_params.grid(row = 22, column = 3, padx = 10, pady = 10)
+        enter_params.grid(row = 22, column = 4, padx = 10, pady = 10)
 
         stop = ttk.Button(self, text = "Stop", command = app.stop_run)
         stop.grid(row = 23, column = 2, padx = 10, pady = 10)
@@ -52,14 +54,23 @@ class Start_Page(tk.Frame):
 
         printVoltages = ttk.Button(self, text = 'pv', command = 
                                  self.print_voltages)
-        printVoltages.grid(row=23, column=3, padx = 10, pady = 10)
+        printVoltages.grid(row=25, column=2, padx = 10, pady = 10)
+
+        # on = ttk.Button(self, text = 'close', command = lambda : app.relay(1))
+        # on.grid(row=25, column=4, padx = 10, pady = 10)
+
+        # off = ttk.Button(self, text = 'open', command = lambda : app.relay(0))
+        # off.grid(row=25, column=3, padx = 10, pady = 10)
+
+        clamp = ttk.Button(self, text = 'Clamp', command = lambda : clamp(app.tdac))
+        clamp.grid(row=22, column=3, padx = 10, pady = 10)
 
         fileField = tk.Label(self, text='File Name: (exclude ".csv")')
-        fileField.grid(row=22, column=4, sticky = 'n')
+        fileField.grid(row=22, column=5, sticky = 'n')
 
         fileName = tk.StringVar()
         saveFile = tk.Entry(self, textvariable = fileName)
-        saveFile.grid(row=22, column=4, sticky = 's')
+        saveFile.grid(row=22, column=5, sticky = 's')
 
         save = tk.Button(self, text = "Save to File", 
                           command = lambda: self.save_to_file(fileName.get()))
@@ -67,7 +78,7 @@ class Start_Page(tk.Frame):
 
         saveFolder = tk.Button(self, text = "Save to Folder", 
                           command = lambda: self.save_to_folder(fileName.get()))
-        saveFolder.grid(row=23, column=4, padx = 10, pady=10)
+        saveFolder.grid(row=24, column=5, padx = 10, pady=10, sticky = 'n')
 
         self.fig = Figure(figsize=(5,5), dpi=100)
         self.ax1 = self.fig.add_subplot(111)
@@ -165,7 +176,7 @@ class Start_Page(tk.Frame):
                     self.copy_buttons.append(copybutton)
                     copybutton.grid(row=row+saved_row, column = saved_col+col)
         
-    
+
     def make_copier(self, row):
         return lambda: self.copy_row(row)
 
@@ -185,12 +196,6 @@ class Start_Page(tk.Frame):
         self.label['bg'] = green
         
     def graph(self, graph_x, graph_y1, graph_y2, graph_y3):
-        print('graphing')
-        # print(len(graph_x))
-        # print(graph_x)
-        # print(graph_y1)
-        # print(graph_y2)
-        # print(graph_y3)
         self.fig = Figure(figsize=(5,5), dpi=100)
         self.ax1 = self.fig.add_subplot(111)
         self.ax1.set_xlabel("Time (s)")

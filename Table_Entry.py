@@ -15,6 +15,7 @@ green = "#b0ffa1"
 class Table_Entry(tk.Frame):
     def __init__(self, container, app):
         tk.Frame.__init__(self, container)
+        self.winfo_toplevel().title("Enter Parameters")
 
         self.app = app
 

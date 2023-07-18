@@ -118,7 +118,7 @@ def clamp(tdac):
     # print('clamping')
     tdac.update(5.0)
 
-def setVoltage(app, d, tdac, v):
+def setVoltage(tdac, v):
     # DAC0_VALUE = d.voltageToDACBits(v, dacNumber = 0, is16Bits = False)
     # d.getFeedback(u6.DAC0_8(DAC0_VALUE))
     dacA = v
@@ -153,6 +153,16 @@ def per_sec(app, d, t, start_time, times, sp_list,
         app.update()
     reading = read(d)
     return
+
+# def script_measure(app, d, t, start_time, gdl_tpr):
+#     step_start = time.time()
+#     step_end = step_start + t
+#     print(t)
+#     while(time.time() < step_end):
+#         reading = read(d)
+#         app.update()
+#     reading = read(d)
+#     return
 
 
 def read_stream(d):
