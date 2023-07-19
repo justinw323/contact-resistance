@@ -62,8 +62,8 @@ class Start_Page(tk.Frame):
         # off = ttk.Button(self, text = 'open', command = lambda : app.relay(0))
         # off.grid(row=25, column=3, padx = 10, pady = 10)
 
-        clamp = ttk.Button(self, text = 'Clamp', command = lambda : clamp(app.tdac))
-        clamp.grid(row=22, column=3, padx = 10, pady = 10)
+        cl = ttk.Button(self, text = 'Clamp', command = lambda : clamp(app.tdac))
+        cl.grid(row=22, column=3, padx = 10, pady = 10)
 
         fileField = tk.Label(self, text='File Name: (exclude ".csv")')
         fileField.grid(row=22, column=5, sticky = 'n')
@@ -192,7 +192,7 @@ class Start_Page(tk.Frame):
         self.app.clipboard_append((str(self.app.sp[row-1]),
                                   str(self.app.tpr[row-1]),
                                   str(self.app.cr[row-1])))
-        self.label['text'] = ('Copied row' + str(row)) 
+        self.label['text'] = ('Copied row ' + str(row)) 
         self.label['bg'] = green
         
     def graph(self, graph_x, graph_y1, graph_y2, graph_y3):
@@ -222,8 +222,6 @@ class Start_Page(tk.Frame):
         tpr = ['TPR'] + [x[1].get() for x in self.r_labels[:numsteps]]
         cr = ['CR'] + [x[1].get() for x in self.c_labels[:numsteps]]
         gdltpr = ['GDL TPR'] + [str(x) for x in self.app.gdl_tpr]
-        # print('Saved')
-        # print()
         data = np.transpose(np.array([['Notes'] + steps, 
                                       [self.notes.get('1.0', 'end-1c')]
                                        + compressed, 
@@ -237,7 +235,9 @@ class Start_Page(tk.Frame):
 
     def save_to_folder(self, fileName):
         if(fileName == ''):
-            fileName = 'fileName'
+            today = date.today()
+            fileName = today.strftime("%Y")[2:] + today.strftime("%m") + \
+                today.strftime("%d")
         steps = ['#'] + [str(x+1) for x in range(len(self.app.voltages))]
         compressed = ['Sample Pressure (psi)'] + [x[1].get() for x in self.p_labels[:len(self.app.voltages)]]
         tpr = ['TPR'] + [x[1].get() for x in self.r_labels[:len(self.app.voltages)]]
@@ -251,9 +251,18 @@ class Start_Page(tk.Frame):
                                       [''] + gdltpr]
                                       ))
         
-        folder =  filedialog.askdirectory(initialdir = "/",title = "Select folder")
-        np.savetxt(folder + '/' + fileName + '.csv', data, fmt='%s', 
-                                                delimiter = ',')
+        folder =  filedialog.askdirectory(initialdir = "/",title = 
+                                          "Select folder")
+        filepath = folder + '/' + fileName + '.csv'
+
+        if os.path.isfile(filepath):
+            filename, extension = os.path.splitext(filepath)
+            counter = 1
+            while os.path.isfile(filepath):
+                filepath = filename + " (" + str(counter) + ")" + extension
+                counter += 1
+        
+        np.savetxt(filepath, data, fmt='%s', delimiter = ',')
         self.label['text'] = ('Saved')
         self.label['bg'] = green
 

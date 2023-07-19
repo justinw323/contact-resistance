@@ -5,6 +5,8 @@ import time
 import os
 import numpy as np
 import json
+import math
+from datetime import date
 
 from Start_Page import *
 
@@ -59,6 +61,7 @@ class Table_Entry(tk.Frame):
                             [self.v_entries[x].get() for x in range(20)], 
                             [self.t_entries[x].get() for x in range(20)],
                             [self.r_entries[x].get() for x in range(20)],
+                            self.d_entry.get()
                             ))
         confirm.grid(row = self.steps+2, column = 0, columnspan = 2,
                      padx = 10, pady = 10)
@@ -74,6 +77,7 @@ class Table_Entry(tk.Frame):
                             [self.v_entries[x].get() for x in range(20)], 
                             [self.t_entries[x].get() for x in range(20)],
                             [self.r_entries[x].get() for x in range(20)],
+                            self.d_entry.get()
                             ))
         save.grid(row = self.steps+2, column = 2, padx = 10, pady = 10)
 
@@ -84,7 +88,7 @@ class Table_Entry(tk.Frame):
     def make_tables(self):
         # Entry table
         for row in range(self.steps+1):
-            for col in range(6):
+            for col in range(7):
                 # Step
                 if(col == 0):
                     label = tk.Label(self, text=("Step" if row == 0 
@@ -138,13 +142,25 @@ class Table_Entry(tk.Frame):
                 # TPR
                 elif(col == 5):
                     if(row == 0):
-                        label = tk.Label(self, text=("GDL Through\nPlate Resistance"), fg = "#ffffff", 
+                        label = tk.Label(self, text=
+                                         ("GDL Through\nPlate Resistance"), 
+                                         fg = "#ffffff", 
                                          width = 24, bg="#31353b")
                         label.grid(row=row, column=col)
                     else:
                         entry = tk.Entry(self)
                         self.r_entries.append(entry)
                         entry.grid(row=row, column=col)
+                # Diameter
+                elif(col == 6):
+                    if(row == 0):
+                        label = tk.Label(self, text=("Cylinder\nDiameter (mm)"),
+                                         fg = "#ffffff", 
+                                         width = 24, bg="#31353b")
+                        label.grid(row=row, column=col)
+                    elif(row == 1):
+                        self.d_entry = tk.Entry(self)
+                        self.d_entry.grid(row=row, column=col)
 
     def get_presets(self):
         with open('presets.json', 'r+') as file:
@@ -183,8 +199,7 @@ class Table_Entry(tk.Frame):
                 self.label['text'] = 'Preset "' + preset + '" loaded'
                 self.label['bg'] = green
         # print(program)
-        self.set_params([x[0] for x in program], [x[1] for x in program],
-                        [x[2] for x in program])
+        self.set_params(program['V'], program["T"], program["G"], program["D"])
         self.label['text'] = 'Preset "' + preset + '" loaded'
 
     def delete_preset(self, preset):
@@ -216,9 +231,10 @@ class Table_Entry(tk.Frame):
         for t in str_times:
             self.app.times = float(t)
 
-    def check_params(self, str_voltages, str_times, str_tpr):
+    def check_params(self, str_voltages, str_times, str_tpr, str_diam):
         counter = 0
         try:
+            float(str_diam)
             for (v,t,r) in zip(str_voltages, str_times, str_tpr):
                 # print(v,t,r)
                 float(v)
@@ -231,9 +247,9 @@ class Table_Entry(tk.Frame):
         except:
             return 0
     
-    def set_params(self, str_voltages, str_times, str_tpr):
+    def set_params(self, str_voltages, str_times, str_tpr, str_diam):
         # print(str_voltages, str_times)
-        steps = self.check_params(str_voltages, str_times, str_tpr)
+        steps = self.check_params(str_voltages, str_times, str_tpr, str_diam)
         if(steps == 0):
             self.label['text'] = 'Invalid value(s)'
             self.label['bg'] = red
@@ -256,28 +272,35 @@ class Table_Entry(tk.Frame):
             self.app.voltages.append(float(str_voltages[v]))
             self.app.times.append(float(str_times[v]))
             self.app.gdl_tpr.append(float(str_tpr[v]))
-            self.app.samplePressure.append(float(str_voltages[v])/10.0*50.0 * 7.0)
+            # Area of cylinder in sq in given diameter in mm
+            area = math.pow((float(str_diam) * 0.0393701)/2,2) * math.pi
+            self.app.samplePressure.append(float(str_voltages[v])/10.0*50.0*\
+                                           area)
 
-            # Updating entry tables
-            self.v_entries[v].insert(0,str_voltages[v])
-            self.t_entries[v].insert(0,str_times[v])
-            self.r_entries[v].insert(0,str_tpr[v])
+            # Updating entry tables (with rounded floating point errors)
+            self.v_entries[v].insert(0,f"{float(str_voltages[v]):02}")
+            self.t_entries[v].insert(0,f"{float(str_times[v]):02}")
+            self.r_entries[v].insert(0,f"{float(str_tpr[v]):02}")
+            # Update pressure labels
+            self.c_labels[v]['text'] = (str(round(float(
+                str_voltages[v])/10.0*50.0,2)) if (v < len(
+                str_voltages)) else "--")
+            self.s_labels[v]['text'] = (str(round(float(
+                str_voltages[v])/10.0*50.0 * area,2)) if (v < len(
+                str_voltages)) else "--")
 
-            # Grid the buttons and start page labels
+            # Grid the start page labels and copy buttons
             self.app.frames[Start_Page].copy_buttons[v].grid()
             self.app.frames[Start_Page].s_labels[v].grid()
-            self.c_labels[v]['text'] = (str(float(
-                str_voltages[v])/10.0*50.0) if (v < len(
-                str_voltages)) else "--")
-            self.s_labels[v]['text'] = (str(float(
-                str_voltages[v])/10.0*50.0 * 7.0) if (v < len(
-                str_voltages)) else "--")
             self.app.frames[Start_Page].p_labels[v][1].set("--")
             self.app.frames[Start_Page].p_labels[v][0].grid()
             self.app.frames[Start_Page].r_labels[v][1].set("--")
             self.app.frames[Start_Page].r_labels[v][0].grid()
             self.app.frames[Start_Page].c_labels[v][1].set("--")
             self.app.frames[Start_Page].c_labels[v][0].grid()
+
+        self.d_entry.delete(0,tk.END)
+        self.d_entry.insert(0,f"{float(str_diam):02}")
 
         self.label['text'] = 'Parameters loaded'
         self.label['bg'] = green
@@ -298,18 +321,24 @@ class Table_Entry(tk.Frame):
         self.app.frames[Start_Page].label['text'] = 'Ready'
         self.app.frames[Start_Page].label['bg'] = green
         
-    def save_preset(self, preset_name, str_voltages, str_times, str_tpr):        
-        steps = self.check_params(str_voltages, str_times, str_tpr)
+    def save_preset(self, preset_name, str_voltages, str_times, str_tpr, \
+                    str_diam):        
+        steps = self.check_params(str_voltages, str_times, str_tpr, str_diam)
         if(steps == 0):
             self.label['text'] = 'Invalid value(s)'
             self.label['bg'] = red
             return
+        if(preset_name == ''):
+            self.label['text'] = 'Enter preset name'
+            self.label['bg'] = red
+            return
         with open('presets.json', 'r+') as file:
             file_data = json.load(file)
-            zipped = list(zip([float(x) for x in str_voltages[:steps]], 
-                              [float(y) for y in str_times[:steps]], 
-                              [float(y) for y in str_tpr[:steps]]))
-            file_data[preset_name] = zipped
+            program = {'V': [float(x) for x in str_voltages[:steps]],
+                       'T': [float(y) for y in str_times[:steps]], 
+                       'G': [float(y) for y in str_tpr[:steps]],
+                       'D': float(str_diam)}
+            file_data[preset_name] = program
             file.seek(0)
             json.dump(file_data, file, indent = 4)
             file.close()
