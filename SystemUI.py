@@ -16,6 +16,7 @@ import numpy as np
 from controller import *
 from Table_Entry import *
 from Start_Page import *
+from LabJackPython import *
 
 pages = []
 red = '#ff6e6e'
@@ -26,9 +27,8 @@ green = "#b0ffa1"
 
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
-        self.controller, self.tdac = init_controller()
-        clamp(self.tdac)
         self.running = False
+        self.clamping = False
 
         self.voltages = []
         self.times = []
@@ -84,23 +84,38 @@ class Application(tk.Tk):
 
     def relay(self, v):
         # Set to high to close, low to open
+        # print("close" if v == 1  else 'open')
         self.controller.setDOState(2, state = v)
 
     def make_copier(self, row):
         return lambda: self.copy_row(row)
+
+    def clamp_unclamp(self):
+        if self.clamping:
+            self.frames[Start_Page].cl['text'] = 'Clamp'
+            unclamp(self.tdac)
+            self.controller.close()
+            self.controller = None
+        else:
+            self.frames[Start_Page].cl['text'] = 'Unclamp'
+            self.controller, self.tdac = init_controller()
+            clamp(self.tdac)
+        self.clamping = not self.clamping
 
     def reg_read(self, rapid):
         if(self.running):
             print("running")
             return
         # Close the relay
-        self.relay(1)
-        self.running = True
         if(not self.ready):
             self.frames[Start_Page].label['text'] = 'No parameters set'
             self.frames[Start_Page].label['bg'] = red
             self.running = False
             return
+        self.running = True
+        self.controller, self.tdac = init_controller()
+        clamp(self.tdac)
+        self.relay(1)
         
         for i in range(20):
             if (self.frames[Start_Page].c_labels[i][1].get() != ''):
@@ -157,11 +172,6 @@ class Application(tk.Tk):
             self.update()
             counter += 1
 
-        # elapsed = time.time() - start_time
-        # intended = sum(times)
-        # print(intended, elapsed)
-        # print('off by ' + str((elapsed-intended)/intended))
-
         self.frames[Start_Page].graph(graph_times, 
                                       graph_pressure,
                                       graph_tpr, graph_cr)
@@ -173,6 +183,8 @@ class Application(tk.Tk):
         clamp(self.tdac)
         # self.frames[Start_Page].save_to_file()
         self.update()
+        self.controller.close()
+        self.controller = None
 
     def convert_readings(self, in1, in2, in3):
         # Three lists of readings in
@@ -185,6 +197,8 @@ class Application(tk.Tk):
         self.frames[Start_Page].label['bg'] = green
         clamp(self.tdac)
         self.update()
+        self.controller.close()
+        self.controller = None
 
 app = Application()
 

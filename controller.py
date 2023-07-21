@@ -118,6 +118,10 @@ def clamp(tdac):
     # print('clamping')
     tdac.update(5.0)
 
+def unclamp(tdac):
+    # print('clamping')
+    tdac.update(0.0)
+
 def setVoltage(tdac, v):
     # DAC0_VALUE = d.voltageToDACBits(v, dacNumber = 0, is16Bits = False)
     # d.getFeedback(u6.DAC0_8(DAC0_VALUE))
@@ -132,6 +136,9 @@ def wait(app, t):
         counter += 0.1
     # time.sleep(t)
     return
+
+def print_read(d):
+    print(d.getAIN(0), d.getAIN(1), d.getAIN(2))
 
 # Reads from AIN0, AIN1, AIN2 and returns as tuple
 def read(d):

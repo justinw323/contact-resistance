@@ -52,18 +52,18 @@ class Start_Page(tk.Frame):
                          bg = yellow if not self.ready else green)
         self.label.grid(row=22, column=1, padx = 10)
 
-        printVoltages = ttk.Button(self, text = 'pv', command = 
-                                 self.print_voltages)
-        printVoltages.grid(row=25, column=2, padx = 10, pady = 10)
+        printVoltages = ttk.Button(self, text = 'read', command = 
+                                 lambda : print_read(app.controller))
+        printVoltages.grid(row=24, column=2, padx = 10, pady = 10)
 
-        # on = ttk.Button(self, text = 'close', command = lambda : app.relay(1))
-        # on.grid(row=25, column=4, padx = 10, pady = 10)
+        # cl = ttk.Button(self, text = 'close', command = lambda : app.relay(1))
+        # cl.grid(row=25, column=4, padx = 10, pady = 10)
 
-        # off = ttk.Button(self, text = 'open', command = lambda : app.relay(0))
-        # off.grid(row=25, column=3, padx = 10, pady = 10)
+        # op = ttk.Button(self, text = 'open', command = lambda : app.relay(0))
+        # op.grid(row=25, column=3, padx = 10, pady = 10)
 
-        cl = ttk.Button(self, text = 'Clamp', command = lambda : clamp(app.tdac))
-        cl.grid(row=22, column=3, padx = 10, pady = 10)
+        self.cl = ttk.Button(self, text = 'Clamp', command = app.clamp_unclamp)
+        self.cl.grid(row=22, column=3, padx = 10, pady = 10)
 
         fileField = tk.Label(self, text='File Name: (exclude ".csv")')
         fileField.grid(row=22, column=5, sticky = 'n')
@@ -175,7 +175,6 @@ class Start_Page(tk.Frame):
                                            command = self.make_copier(row))
                     self.copy_buttons.append(copybutton)
                     copybutton.grid(row=row+saved_row, column = saved_col+col)
-        
 
     def make_copier(self, row):
         return lambda: self.copy_row(row)
