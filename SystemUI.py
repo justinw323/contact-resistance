@@ -94,8 +94,7 @@ class Application(tk.Tk):
         if self.clamping:
             self.frames[Start_Page].cl['text'] = 'Clamp'
             unclamp(self.tdac)
-            self.controller.close()
-            self.controller = None
+            self.close_controller()
         else:
             self.frames[Start_Page].cl['text'] = 'Unclamp'
             self.controller, self.tdac = init_controller()
@@ -104,7 +103,6 @@ class Application(tk.Tk):
 
     def reg_read(self, rapid):
         if(self.running):
-            print("running")
             return
         # Close the relay
         if(not self.ready):
@@ -119,6 +117,7 @@ class Application(tk.Tk):
         
         for i in range(20):
             if (self.frames[Start_Page].c_labels[i][1].get() != ''):
+                self.frames[Start_Page].p_labels[i][1].set('--')
                 self.frames[Start_Page].c_labels[i][1].set('--')
                 self.frames[Start_Page].r_labels[i][1].set('--')
             else:
@@ -157,12 +156,13 @@ class Application(tk.Tk):
             v1 = reading[0]
             v2 = reading[1]
             v3 = reading[2]
+            print(v1)
             # Reading from AIN0, AIN1, AIN2
             # print(time.time())
 
-            sp = v3
-            tpr = v1-self.gdl_tpr[counter-1]
-            cr = v2-(0.5*self.gdl_tpr[counter-1])
+            sp = v3*5.0
+            tpr = v1*1000-self.gdl_tpr[counter-1]
+            cr = v2*1000-(0.5*self.gdl_tpr[counter-1])
             self.sp.append(sp)
             self.tpr.append(tpr)
             self.cr.append(cr)
@@ -180,31 +180,32 @@ class Application(tk.Tk):
         self.running = False
         # Open the relay
         self.relay(0)
-        clamp(self.tdac)
+        unclamp(self.tdac)
         # self.frames[Start_Page].save_to_file()
         self.update()
+        # self.close_controller()
+
+    def close_controller(self):
+        if(self.controller == None):
+            return
+        print('close')
+        unclamp(self.tdac)
         self.controller.close()
         self.controller = None
-
-    def convert_readings(self, in1, in2, in3):
-        # Three lists of readings in
-        # Fill this out with whatever calculation for pressure
-        return in1, in2, in3
+        self.tdac = None
 
     def stop_run(self):
         self.running = False
         self.frames[Start_Page].label['text'] = "Ready" 
         self.frames[Start_Page].label['bg'] = green
-        clamp(self.tdac)
+        self.relay(0)
+        unclamp(self.tdac)
         self.update()
-        self.controller.close()
-        self.controller = None
+        self.close_controller()
 
-app = Application()
-
-app.mainloop()
-
-
-
-
-# Automatically savefile after run
+if __name__ == "__main__":
+    app = Application()
+    try:
+        app.mainloop()
+    finally:
+        app.close_controller()

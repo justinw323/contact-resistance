@@ -27,6 +27,8 @@ class Start_Page(tk.Frame):
         self.ready = ready
         self.app = app
 
+        # v = Scrollbar(self, orient='vertical')    
+
         readV = ttk.Button(self, text = "Start", command = 
                            lambda: app.reg_read(False))
         readV.grid(row = 22, column = 2, padx = 10, pady = 10)
@@ -52,15 +54,12 @@ class Start_Page(tk.Frame):
                          bg = yellow if not self.ready else green)
         self.label.grid(row=22, column=1, padx = 10)
 
-        printVoltages = ttk.Button(self, text = 'read', command = 
+        readVoltages = ttk.Button(self, text = 'read', command = 
                                  lambda : print_read(app.controller))
-        printVoltages.grid(row=24, column=2, padx = 10, pady = 10)
+        readVoltages.grid(row=24, column=2, padx = 10, pady = 10)
 
-        # cl = ttk.Button(self, text = 'close', command = lambda : app.relay(1))
-        # cl.grid(row=25, column=4, padx = 10, pady = 10)
-
-        # op = ttk.Button(self, text = 'open', command = lambda : app.relay(0))
-        # op.grid(row=25, column=3, padx = 10, pady = 10)
+        pv = ttk.Button(self, text = 'pv', command = self.print_voltages)
+        pv.grid(row=23, column=3, padx = 10, pady = 10)
 
         self.cl = ttk.Button(self, text = 'Clamp', command = app.clamp_unclamp)
         self.cl.grid(row=22, column=3, padx = 10, pady = 10)
@@ -202,7 +201,7 @@ class Start_Page(tk.Frame):
         self.ax1.plot(graph_x,graph_y2, label = 'TPR', color = 'tab:red')
         self.ax1.plot(graph_x,graph_y3, label = 'CR', color = 'tab:blue')
         self.ax2 = self.ax1.twinx()
-        self.ax2.set_ylabel('psi', color = 'green')
+        self.ax2.set_ylabel('psi')
         self.ax2.plot(graph_x,graph_y1, label = 'Sample Pressure', color = 'tab:green')
         self.fig.legend(fontsize = 'small')
         self.fig.tight_layout()
@@ -267,6 +266,6 @@ class Start_Page(tk.Frame):
 
     def print_voltages(self):
         print(self.app.voltages)
-        print(self.app.times)
-        print(self.app.samplePressure)
-        print(self.app.gdl_tpr)
+        # print(self.app.times)
+        # print(self.app.samplePressure)
+        # print(self.app.gdl_tpr)

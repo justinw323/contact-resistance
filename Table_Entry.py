@@ -79,7 +79,11 @@ class Table_Entry(tk.Frame):
                             [self.r_entries[x].get() for x in range(20)],
                             self.d_entry.get()
                             ))
-        save.grid(row = self.steps+2, column = 2, padx = 10, pady = 10)
+        save.grid(row = self.steps+2, column = 2, padx = 10, pady = 10)        
+
+        copy_tpr = ttk.Button(self, text = "Copy TPR", command = 
+                                self.copy_tpr)
+        copy_tpr.grid(row = self.steps+1, column = 5, padx = 10, pady = 10)
 
         self.preset = tk.StringVar()
         self.preset.set("Select preset...")
@@ -161,6 +165,22 @@ class Table_Entry(tk.Frame):
                     elif(row == 1):
                         self.d_entry = tk.Entry(self)
                         self.d_entry.grid(row=row, column=col)
+
+    def copy_tpr(self):
+        if(self.app.tpr == []):
+            self.label['text'] = "No TPR measured"
+            self.label['bg'] = red
+            return
+        print(self.app.tpr)
+
+        for v in range(len(self.app.tpr)):
+            # Clearing the entry tables
+            self.r_entries[v].delete(0,tk.END)
+
+            # Adding new values to entry table
+            self.r_entries[v].insert(0,f"{float(self.app.tpr[v]):02}")
+        self.label['text'] = "TPR copied"
+        self.label['bg'] = green
 
     def get_presets(self):
         with open('presets.json', 'r+') as file:
