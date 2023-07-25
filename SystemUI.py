@@ -29,12 +29,15 @@ class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         self.running = False
         self.clamping = False
+        
+        self.controller, self.tdac = init_controller()
 
         self.voltages = []
         self.times = []
         self.airpsi = []
         self.samplePressure = []
         self.gdl_tpr = []
+        self.area = 0.0
 
         self.sp = []
         self.tpr = []
@@ -148,21 +151,26 @@ class Application(tk.Tk):
             self.frames[Start_Page].label['text'] = 'Step %s' % counter
             self.frames[Start_Page].label['bg'] = yellow
             setVoltage(self.tdac, v)
-            per_sec(self, self.controller, t, start_time, graph_times, 
-                    graph_pressure,
-                    self.gdl_tpr[i], graph_gdltpr, graph_tpr, graph_cr)
-
-            reading = read(self.controller)
-            v1 = reading[0]
-            v2 = reading[1]
-            v3 = reading[2]
-            print(v1)
+            tpr_stream, cr_stream, sp_stream = per_sec(self, self.controller, t, 
+                                            start_time, graph_times, 
+                                            graph_pressure, self.gdl_tpr[i], 
+                                            graph_gdltpr, graph_tpr, graph_cr,
+                                            self.area)
+            # Final third of measurement
+            tpr_stream = tpr_stream[int(2*len(tpr_stream)/3):]
+            cr_stream = cr_stream[int(2*len(cr_stream)/3):]
+            sp_stream = sp_stream[int(2*len(sp_stream)/3):]
+            tpr = sum(tpr_stream)/len(tpr_stream)        # Through-plate voltage
+            cr = sum(cr_stream)/len(cr_stream)          # Contact voltage
+            sp = sum(sp_stream)/len(sp_stream)          # Pressure
+            print('Readings: ', read(self.controller)[0] - 0.4)
+            print('TPR: ', tpr)
             # Reading from AIN0, AIN1, AIN2
             # print(time.time())
 
-            sp = v3*5.0
-            tpr = v1*1000-self.gdl_tpr[counter-1]
-            cr = v2*1000-(0.5*self.gdl_tpr[counter-1])
+            # sp = v3*5.0*self.area
+            # tpr = v1*1000-self.gdl_tpr[counter-1]
+            # cr = v2*1000-(0.5*self.gdl_tpr[counter-1])
             self.sp.append(sp)
             self.tpr.append(tpr)
             self.cr.append(cr)
@@ -191,6 +199,7 @@ class Application(tk.Tk):
         print('close')
         unclamp(self.tdac)
         self.controller.close()
+        Close()
         self.controller = None
         self.tdac = None
 

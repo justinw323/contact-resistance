@@ -256,12 +256,12 @@ class Table_Entry(tk.Frame):
         try:
             float(str_diam)
             for (v,t,r) in zip(str_voltages, str_times, str_tpr):
+                if(v == '' and t == '' and r == ''):    # End of params
+                    return counter
                 # print(v,t,r)
                 float(v)
                 float(t)
                 float(r)
-                if(float(v) == 0.0 and float(t) == 0.0 and float(r) == 0.0):
-                    return counter
                 counter += 1
             return counter
         except:
@@ -280,6 +280,8 @@ class Table_Entry(tk.Frame):
         self.app.samplePressure = []
         self.app.gdl_tpr = []
 
+        self.app.area = math.pow((float(str_diam) * 0.0393701)/2,2) * math.pi
+
         for v in range(steps):
             self.app.frames[Start_Page].s_labels[v]['text'] = str(v+1)
 
@@ -293,9 +295,7 @@ class Table_Entry(tk.Frame):
             self.app.times.append(float(str_times[v]))
             self.app.gdl_tpr.append(float(str_tpr[v]))
             # Area of cylinder in sq in given diameter in mm
-            area = math.pow((float(str_diam) * 0.0393701)/2,2) * math.pi
-            self.app.samplePressure.append(float(str_voltages[v])/10.0*50.0*\
-                                           area)
+            self.app.samplePressure.append(float(str_voltages[v])/10.0*50.0*self.app.area)
 
             # Updating entry tables (with rounded floating point errors)
             self.v_entries[v].insert(0,f"{float(str_voltages[v]):02}")
@@ -306,7 +306,7 @@ class Table_Entry(tk.Frame):
                 str_voltages[v])/10.0*50.0,2)) if (v < len(
                 str_voltages)) else "--")
             self.s_labels[v]['text'] = (str(round(float(
-                str_voltages[v])/10.0*50.0 * area,2)) if (v < len(
+                str_voltages[v])/10.0*50.0 * self.app.area,2)) if (v < len(
                 str_voltages)) else "--")
 
             # Grid the start page labels and copy buttons

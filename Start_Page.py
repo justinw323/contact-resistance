@@ -56,7 +56,7 @@ class Start_Page(tk.Frame):
 
         readVoltages = ttk.Button(self, text = 'read', command = 
                                  lambda : print_read(app.controller))
-        readVoltages.grid(row=24, column=2, padx = 10, pady = 10)
+        readVoltages.grid(row=23, column=4, padx = 10, pady = 10)
 
         pv = ttk.Button(self, text = 'pv', command = self.print_voltages)
         pv.grid(row=23, column=3, padx = 10, pady = 10)

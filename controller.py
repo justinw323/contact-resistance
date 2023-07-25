@@ -116,7 +116,7 @@ def init_controller():
 
 def clamp(tdac):
     # print('clamping')
-    tdac.update(5.0)
+    tdac.update(3.0)
 
 def unclamp(tdac):
     # print('clamping')
@@ -145,21 +145,26 @@ def read(d):
     return(d.getAIN(0), d.getAIN(1), d.getAIN(2))
 
 def per_sec(app, d, t, start_time, times, sp_list,
-            gdl_tpr, gdl_tpr_list, tprs, crs
+            gdl_tpr, gdl_tpr_list, tprs, crs, area
             ):
+    tpr_stream = []
+    cr_stream = []
+    sp_stream = []
     step_start = time.time()
     step_end = step_start + t
-    print(t)
     while(time.time() < step_end):
         reading = read(d)
         times.append(time.time()-start_time)
-        sp_list.append(reading[2]) # Voltage -> pressure calculation
-        tprs.append(reading[0] - gdl_tpr)
-        crs.append(reading[1] - 0.5*gdl_tpr)     
+        sp_list.append(reading[2]*5.0*area)
+        sp_stream.append(reading[2]*5.0*area)
+        tprs.append((reading[0]-0.4)*1000 - gdl_tpr)    # All tprs
+        tpr_stream.append((reading[0]-0.4)*1000 - gdl_tpr)  # Tprs from this step
+        crs.append((reading[1]-0.4)*1000 - 0.5*gdl_tpr) # All crs
+        cr_stream.append((reading[1]-0.4)*1000 - 0.5*gdl_tpr)  # Crs from this step
         gdl_tpr_list.append(gdl_tpr)   
         app.update()
     reading = read(d)
-    return
+    return tpr_stream, cr_stream, sp_stream
 
 # def script_measure(app, d, t, start_time, gdl_tpr):
 #     step_start = time.time()
