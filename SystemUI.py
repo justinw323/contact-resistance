@@ -30,7 +30,7 @@ class Application(tk.Tk):
         self.running = False
         self.clamping = False
         
-        self.controller, self.tdac = init_controller()
+        # self.controller, self.tdac = init_controller()
 
         self.voltages = []
         self.times = []
@@ -160,9 +160,12 @@ class Application(tk.Tk):
             tpr_stream = tpr_stream[int(2*len(tpr_stream)/3):]
             cr_stream = cr_stream[int(2*len(cr_stream)/3):]
             sp_stream = sp_stream[int(2*len(sp_stream)/3):]
-            tpr = sum(tpr_stream)/len(tpr_stream)        # Through-plate voltage
-            cr = sum(cr_stream)/len(cr_stream)          # Contact voltage
-            sp = sum(sp_stream)/len(sp_stream)          # Pressure
+            try:
+                tpr = sum(tpr_stream)/len(tpr_stream)        # Through-plate voltage
+                cr = sum(cr_stream)/len(cr_stream)          # Contact voltage
+                sp = sum(sp_stream)/len(sp_stream)          # Pressure
+            except ZeroDivisionError:
+                continue
             print('Readings: ', read(self.controller)[0] - 0.4)
             print('TPR: ', tpr)
             # Reading from AIN0, AIN1, AIN2
@@ -177,12 +180,21 @@ class Application(tk.Tk):
             self.frames[Start_Page].p_labels[counter-1][1].set(round(sp, 2))
             self.frames[Start_Page].r_labels[counter-1][1].set(round(tpr, 2))
             self.frames[Start_Page].c_labels[counter-1][1].set(round(cr, 2))
+            # Take average of every 100 readings
+            # graph_times = graph_times[::100]
+            # graph_pressure = list(np.average(np.array(graph_pressure).reshape(-1,100), axis = 1))
+            # graph_tpr = list(np.average(np.array(graph_tpr).reshape(-1,100), axis = 1))
+            # graph_cr = list(np.average(np.array(graph_cr).reshape(-1,100), axis = 1))
+            self.frames[Start_Page].graph(graph_times, 
+                                        graph_pressure,
+                                        graph_tpr, graph_cr)
             self.update()
             counter += 1
 
-        self.frames[Start_Page].graph(graph_times, 
-                                      graph_pressure,
-                                      graph_tpr, graph_cr)
+
+        # self.frames[Start_Page].graph(graph_times, 
+        #                               graph_pressure,
+        #                               graph_tpr, graph_cr)
         self.frames[Start_Page].label['text'] = 'Done'
         self.frames[Start_Page].label['bg'] = green
         self.running = False

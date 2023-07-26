@@ -83,6 +83,7 @@ class Start_Page(tk.Frame):
         self.ax1 = self.fig.add_subplot(111)
         self.ax1.set_xlabel("Time (s)")
         self.ax1.set_ylabel("Resistance (ohm)")
+        self.ax1.set(ylim=(0, 500))
         self.ax2 = self.ax1.twinx()
         self.ax2.set_ylabel('psi')
         randlist1 = [random.randint(0,10) for x in range(8)]
@@ -198,11 +199,12 @@ class Start_Page(tk.Frame):
         self.ax1 = self.fig.add_subplot(111)
         self.ax1.set_xlabel("Time (s)")
         self.ax1.set_ylabel("Resistance (ohm)")
-        self.ax1.plot(graph_x,graph_y2, label = 'TPR', color = 'tab:red')
-        self.ax1.plot(graph_x,graph_y3, label = 'CR', color = 'tab:blue')
         self.ax2 = self.ax1.twinx()
         self.ax2.set_ylabel('psi')
+        self.ax2.set(ylim=(0, max(500, max(graph_y1))))
         self.ax2.plot(graph_x,graph_y1, label = 'Sample Pressure', color = 'tab:green')
+        self.ax1.plot(graph_x,graph_y2, label = 'TPR', color = 'tab:red')
+        self.ax1.plot(graph_x,graph_y3, label = 'CR', color = 'tab:blue')
         self.fig.legend(fontsize = 'small')
         self.fig.tight_layout()
 

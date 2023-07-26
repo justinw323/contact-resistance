@@ -165,6 +165,9 @@ class Table_Entry(tk.Frame):
                     elif(row == 1):
                         self.d_entry = tk.Entry(self)
                         self.d_entry.grid(row=row, column=col)
+                    elif(row == 2):
+                        self.d_label = tk.Label(self, text=(""))
+                        self.d_label.grid(row=row, column=col)
 
     def copy_tpr(self):
         if(self.app.tpr == []):
@@ -281,6 +284,8 @@ class Table_Entry(tk.Frame):
         self.app.gdl_tpr = []
 
         self.app.area = math.pow((float(str_diam) * 0.0393701)/2,2) * math.pi
+        self.d_label['text'] = ('Area: ' + str(round(self.app.area,2)) + 
+                                ' sq. in')
 
         for v in range(steps):
             self.app.frames[Start_Page].s_labels[v]['text'] = str(v+1)
