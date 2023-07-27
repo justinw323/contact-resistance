@@ -31,7 +31,7 @@ def init_controller():
     # For applying the proper calibration to readings.
     d.getCalibrationData()
 
-    print("Configuring U6 stream")
+    # print("Configuring U6 stream")
     # d.streamConfig(NumChannels=1, ChannelNumbers=[2], ChannelOptions=[0], SettlingFactor=1, ResolutionIndex=1, ScanFrequency=SCAN_FREQUENCY)
     # d.streamConfig(NumChannels=2, ChannelNumbers=[0,1], ChannelOptions=[0,0], SettlingFactor=1, ResolutionIndex=1, ScanFrequency=SCAN_FREQUENCY)
     d.streamConfig(NumChannels=3, ChannelNumbers=[0,1,2], ChannelOptions=[0,0,0], SettlingFactor=1, ResolutionIndex=1, ScanFrequency=SCAN_FREQUENCY)
@@ -90,10 +90,10 @@ def per_sec(app, d, t, start_time, times, sp_list,
     step_end = step_start + t
     
     try:
-        print("Start stream")
+        # print("Start stream")
         d.streamStart()
-        start = datetime.now()
-        print("Start time is %s" % start)
+        # start = datetime.now()
+        # print("Start time is %s" % start)
 
         missed = 0
         dataCount = 0
@@ -103,13 +103,12 @@ def per_sec(app, d, t, start_time, times, sp_list,
             if r is not None:
                 # Our stop condition
                 if time.time() > step_end:
-                    print('break')
                     break
 
                 v1 = sum(r["AIN0"])/len(r["AIN0"])
                 v2 = sum(r["AIN1"])/len(r["AIN1"])
                 v3 = sum(r["AIN2"])/len(r["AIN2"])
-                print(1000*(v1-0.4), 1000*(v2-0.4), 1000*(v3-0.4))
+                # print(1000*(v1-0.4), 1000*(v2-0.4), 1000*(v3-0.4))
                 # Comment out these prints and do something with r
                 # print("Average of %s AIN0, %s AIN1 readings: %s, %s" %
                 #     (len(r["AIN0"]), len(r["AIN1"]), sum(r["AIN0"])/len(r["AIN0"]), sum(r["AIN1"])/len(r["AIN1"])))
@@ -130,36 +129,12 @@ def per_sec(app, d, t, start_time, times, sp_list,
                 # Got no data back from our read.
                 # This only happens if your stream isn't faster than the USB read
                 # timeout, ~1 sec.
-                print("No data ; %s" % datetime.now())
+                # print("No data ; %s" % datetime.now())
+                continue
     except:
-        print("".join(i for i in traceback.format_exc()))
+        # print("".join(i for i in traceback.format_exc()))
+        pass
     finally:
-        print('Stream stopped')
+        # print('Stream stopped')
         d.streamStop()
-
-    # while(time.time() < step_end):
-    #     reading = read(d)
-    #     if(i % 40 == 0):
-    #         print((reading[0]*1000))
-    #         # print((reading[0]-0.4)*1000)
-    #     i += 1
-    #     times.append(time.time()-start_time)
-    #     sp_list.append(reading[2]*5.0*area)
-    #     sp_stream.append(reading[2]*5.0*area)
-    #     tprs.append((reading[0]-0.4)*1000 - gdl_tpr)    # All tprs
-    #     tpr_stream.append((reading[0]-0.4)*1000 - gdl_tpr)  # Tprs from this step
-    #     crs.append((reading[1]-0.4)*1000 - 0.5*gdl_tpr) # All crs
-    #     cr_stream.append((reading[1]-0.4)*1000 - 0.5*gdl_tpr)  # Crs from this step
-    #     gdl_tpr_list.append(gdl_tpr)   
-    #     app.update()
     return tpr_stream, cr_stream, sp_stream
-
-# def script_measure(app, d, t, start_time, gdl_tpr):
-#     step_start = time.time()
-#     step_end = step_start + t
-#     print(t)
-#     while(time.time() < step_end):
-#         reading = read(d)
-#         app.update()
-#     reading = read(d)
-#     return

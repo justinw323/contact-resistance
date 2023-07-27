@@ -87,7 +87,6 @@ class Application(tk.Tk):
 
     def relay(self, v):
         # Set to high to close, low to open
-        # print("close" if v == 1  else 'open')
         self.controller.setDOState(2, state = v)
 
     def make_copier(self, row):
@@ -147,7 +146,7 @@ class Application(tk.Tk):
             t = times[i]
             if(not self.running):
                 return
-            print(('Step %s' % counter))
+            # print(('Step %s' % counter))
             self.frames[Start_Page].label['text'] = 'Step %s' % counter
             self.frames[Start_Page].label['bg'] = yellow
             setVoltage(self.tdac, v)
@@ -166,25 +165,17 @@ class Application(tk.Tk):
                 sp = sum(sp_stream)/len(sp_stream)          # Pressure
             except ZeroDivisionError:
                 continue
-            print('Readings: ', read(self.controller)[0] - 0.4)
-            print('TPR: ', tpr)
+            # print('Readings: ', read(self.controller)[0] - 0.4)
+            # print('TPR: ', tpr)
             # Reading from AIN0, AIN1, AIN2
             # print(time.time())
 
-            # sp = v3*5.0*self.area
-            # tpr = v1*1000-self.gdl_tpr[counter-1]
-            # cr = v2*1000-(0.5*self.gdl_tpr[counter-1])
             self.sp.append(sp)
             self.tpr.append(tpr)
             self.cr.append(cr)
             self.frames[Start_Page].p_labels[counter-1][1].set(round(sp, 2))
             self.frames[Start_Page].r_labels[counter-1][1].set(round(tpr, 2))
             self.frames[Start_Page].c_labels[counter-1][1].set(round(cr, 2))
-            # Take average of every 100 readings
-            # graph_times = graph_times[::100]
-            # graph_pressure = list(np.average(np.array(graph_pressure).reshape(-1,100), axis = 1))
-            # graph_tpr = list(np.average(np.array(graph_tpr).reshape(-1,100), axis = 1))
-            # graph_cr = list(np.average(np.array(graph_cr).reshape(-1,100), axis = 1))
             self.frames[Start_Page].graph(graph_times, 
                                         graph_pressure,
                                         graph_tpr, graph_cr)
@@ -192,23 +183,18 @@ class Application(tk.Tk):
             counter += 1
 
 
-        # self.frames[Start_Page].graph(graph_times, 
-        #                               graph_pressure,
-        #                               graph_tpr, graph_cr)
         self.frames[Start_Page].label['text'] = 'Done'
         self.frames[Start_Page].label['bg'] = green
         self.running = False
         # Open the relay
         self.relay(0)
         unclamp(self.tdac)
-        # self.frames[Start_Page].save_to_file()
         self.update()
         # self.close_controller()
 
     def close_controller(self):
         if(self.controller == None):
             return
-        print('close')
         unclamp(self.tdac)
         self.controller.close()
         Close()

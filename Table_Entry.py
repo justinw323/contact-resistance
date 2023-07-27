@@ -174,7 +174,6 @@ class Table_Entry(tk.Frame):
             self.label['text'] = "No TPR measured"
             self.label['bg'] = red
             return
-        print(self.app.tpr)
 
         for v in range(len(self.app.tpr)):
             # Clearing the entry tables
@@ -221,7 +220,6 @@ class Table_Entry(tk.Frame):
                 program = file_data[preset]
                 self.label['text'] = 'Preset "' + preset + '" loaded'
                 self.label['bg'] = green
-        # print(program)
         self.set_params(program['V'], program["T"], program["G"], program["D"])
         self.label['text'] = 'Preset "' + preset + '" loaded'
 

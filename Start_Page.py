@@ -27,14 +27,12 @@ class Start_Page(tk.Frame):
         self.ready = ready
         self.app = app
 
-        # v = Scrollbar(self, orient='vertical')    
-
         readV = ttk.Button(self, text = "Start", command = 
                            lambda: app.reg_read(False))
         readV.grid(row = 22, column = 2, padx = 10, pady = 10)
 
-        rapid = ttk.Button(self, text = "Rapid", command = 
-                           lambda: app.reg_read(True))
+        # rapid = ttk.Button(self, text = "Rapid", command = 
+        #                    lambda: app.reg_read(True))
         # rapid.grid(row = 25, column = 2, padx = 10, pady = 10)
 
         enter_params = ttk.Button(self, text = "Parameters", command = 
@@ -45,21 +43,21 @@ class Start_Page(tk.Frame):
         stop.grid(row = 23, column = 2, padx = 10, pady = 10)
 
         notesHere = tk.Label(self, text='Notes for measurement:')
-        notesHere.grid(row=23, column=1, sticky = 's')
+        notesHere.grid(row=20, column=1, sticky = 's')
         self.notes = ScrolledText(self, width = 40, height = 5)
-        self.notes.grid(row=24, rowspan = 3, column=1, padx = 10, sticky = 'n')
+        self.notes.grid(row=21, rowspan = 3, column=1, padx = 10, sticky = 'n')
 
         self.label = tk.Label(self, text="Waiting for parameters" if not self.ready
                                else "Ready", 
                          bg = yellow if not self.ready else green)
-        self.label.grid(row=22, column=1, padx = 10)
+        self.label.grid(row=19, column=1, padx = 10)
 
-        readVoltages = ttk.Button(self, text = 'read', command = 
-                                 lambda : print_read(app.controller))
-        readVoltages.grid(row=23, column=4, padx = 10, pady = 10)
+        # readVoltages = ttk.Button(self, text = 'read', command = 
+        #                          lambda : print_read(app.controller))
+        # readVoltages.grid(row=23, column=4, padx = 10, pady = 10)
 
-        pv = ttk.Button(self, text = 'pv', command = self.print_voltages)
-        pv.grid(row=23, column=3, padx = 10, pady = 10)
+        # pv = ttk.Button(self, text = 'pv', command = self.print_voltages)
+        # pv.grid(row=23, column=3, padx = 10, pady = 10)
 
         self.cl = ttk.Button(self, text = 'Clamp', command = app.clamp_unclamp)
         self.cl.grid(row=22, column=3, padx = 10, pady = 10)
@@ -71,13 +69,13 @@ class Start_Page(tk.Frame):
         saveFile = tk.Entry(self, textvariable = fileName)
         saveFile.grid(row=22, column=5, sticky = 's')
 
-        save = tk.Button(self, text = "Save to File", 
-                          command = lambda: self.save_to_file(fileName.get()))
-        save.grid(row=23, column=5, padx = 10, pady=10)
-
-        saveFolder = tk.Button(self, text = "Save to Folder", 
+        saveFolder = tk.Button(self, text = "Save", 
                           command = lambda: self.save_to_folder(fileName.get()))
-        saveFolder.grid(row=24, column=5, padx = 10, pady=10, sticky = 'n')
+        saveFolder.grid(row=23, column=5, padx = 10, pady=10, sticky = 'n')
+
+        # save = tk.Button(self, text = "Save to File", 
+        #                   command = lambda: self.save_to_file(fileName.get()))
+        # save.grid(row=24, column=5, padx = 10, pady=10)
 
         self.fig = Figure(figsize=(5,5), dpi=100)
         self.ax1 = self.fig.add_subplot(111)
@@ -86,16 +84,15 @@ class Start_Page(tk.Frame):
         self.ax1.set(ylim=(0, 500))
         self.ax2 = self.ax1.twinx()
         self.ax2.set_ylabel('psi')
-        randlist1 = [random.randint(0,10) for x in range(8)]
+        randlist1 = [random.randint(20,400) for x in range(8)]
         randlist2 = [random.randint(0,10) for x in range(8)]
         self.ax1.plot([1,2,3,4,5,6,7,8],randlist1, color = 'tab:red')
         self.ax2.plot([1,2,3,4,5,6,7,8],randlist2, color = 'tab:blue')
-        # self.fig.legend()
         self.fig.tight_layout()
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.graph_widget = self.canvas.get_tk_widget()
-        self.graph_widget.grid(row = 1, column = 1, rowspan=21)
+        self.graph_widget.grid(row = 1, column = 1, rowspan=18)
 
         toolbar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
         toolbar.update()
@@ -108,7 +105,7 @@ class Start_Page(tk.Frame):
         self.c_labels = []
         self.copy_buttons = []
 
-        saved_row = 1
+        saved_row = 0
         saved_col = 2
 
         # Saved params
@@ -181,7 +178,6 @@ class Start_Page(tk.Frame):
 
     def copy_row(self, row):
         if(self.app.running):
-            print('running')
             return
         if(row-1 > len(self.app.sp)):
             self.label['text'] = 'No data'
@@ -212,7 +208,7 @@ class Start_Page(tk.Frame):
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.graph_widget = self.canvas.get_tk_widget()
-        self.graph_widget.grid(row = 1, column = 1, rowspan=21)
+        self.graph_widget.grid(row = 1, column = 1, rowspan=18)
 
     def save_to_file(self, fileName):
         numsteps = len(self.app.voltages)
