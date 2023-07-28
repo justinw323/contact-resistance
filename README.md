@@ -6,6 +6,9 @@ Install anaconda and set up a vitual environment following these instructions: h
 
 1. Click the green "Code" button, click "Download ZIP"
 2. Unzip the files and move to your choice of location
+3. Ensure that the computer has LabJack software installed
+   1. Installer can be found at https://labjack.com/support/software/installers
+   2. Follow the onscreen instructions to install LabJack software
 
 From a terminal:
 1. Navigate to the folder containing the .spec file (label_maker.spec or label_maker_fast.spec)
@@ -14,6 +17,6 @@ From a terminal:
    2. `pip3 install pyinstaller`
    3. `conda install pyinstaller` if using the Anaconda prompt
 4. Run:
-   1. `pyinstaller contact_resistance.spec` for the slower app
-   2. `pyinstaller contact_resistance_fast.spec` for the faster app
-        1. This creates a folder called "contact_resistance_fast" containing the file contact_resistance_fast.exe file, as well as other files. The .exe file must be kept in that folder for the program to work, and the other files must not be deleted 
+   1. `pyinstaller contact_resistance.spec` for the slower app. This creates two folders: build and dist. dist will contain a the file "contact_resistance.exe", which is the application.
+   2. `pyinstaller contact_resistance_fast.spec` for the faster app. This creates two folders: build and dist.
+        1. dist will contain another folder called "contact_resistance_fast", which will contain the "contact_resistance_fast.exe" file, as well as other files. The .exe file must be kept in that folder for the program to work, and the other files must not be deleted 
