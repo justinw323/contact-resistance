@@ -62,14 +62,14 @@ class Start_Page(tk.Frame):
         self.cl = ttk.Button(self, text = 'Clamp', command = app.clamp_unclamp)
         self.cl.grid(row=22, column=3, padx = 10, pady = 10)
 
-        fileField = tk.Label(self, text='File Name: (exclude ".csv")')
+        fileField = tk.Label(self, text='File Name:')
         fileField.grid(row=22, column=5, sticky = 'n')
 
         fileName = tk.StringVar()
         saveFile = tk.Entry(self, textvariable = fileName)
         saveFile.grid(row=22, column=5, sticky = 's')
 
-        saveFolder = tk.Button(self, text = "Save", 
+        saveFolder = tk.Button(self, text = "Save to Excel", 
                           command = lambda: self.save_to_folder(fileName.get()))
         saveFolder.grid(row=23, column=5, padx = 10, pady=10, sticky = 'n')
 

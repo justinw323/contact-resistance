@@ -17,7 +17,7 @@ green = "#b0ffa1"
 class Table_Entry(tk.Frame):
     def __init__(self, container, app):
         tk.Frame.__init__(self, container)
-        self.winfo_toplevel().title("Enter Parameters")
+        self.winfo_toplevel().title("Contact Resistance")
 
         self.app = app
 
@@ -56,7 +56,7 @@ class Table_Entry(tk.Frame):
         backToStart.grid(row = 25, column = 0, padx = 10, pady = 10, 
                          sticky = 'w')
 
-        confirm = ttk.Button(self, text = "Load Current Settings", command = 
+        confirm = ttk.Button(self, text = "Load Current Parameters", command = 
                             lambda : self.set_params(
                             [self.v_entries[x].get() for x in range(20)], 
                             [self.t_entries[x].get() for x in range(20)],
@@ -72,18 +72,22 @@ class Table_Entry(tk.Frame):
         presetName.grid(row=self.steps+1, column=2, sticky = 's')
         name = tk.Label(self, text = 'Preset name')
         name.grid(row=self.steps+1, column=2, sticky = 'n')
-        save = ttk.Button(self, text = "Save Current Settings", command = 
+        save = ttk.Button(self, text = "Save Current Parameters", command = 
                             lambda : self.save_preset(presetVar.get(),
                             [self.v_entries[x].get() for x in range(20)], 
                             [self.t_entries[x].get() for x in range(20)],
                             [self.r_entries[x].get() for x in range(20)],
                             self.d_entry.get()
                             ))
-        save.grid(row = self.steps+2, column = 2, padx = 10, pady = 10)        
+        save.grid(row = self.steps+2, column = 2, padx = 10, pady = 10)  
+
+        zero_tpr = ttk.Button(self, text = "Zero TPR", command = 
+                                self.zero_tpr)
+        zero_tpr.grid(row = self.steps+1, column = 5, padx = 10, pady = 10) 
 
         copy_tpr = ttk.Button(self, text = "Copy TPR", command = 
                                 self.copy_tpr)
-        copy_tpr.grid(row = self.steps+1, column = 5, padx = 10, pady = 10)
+        copy_tpr.grid(row = self.steps+2, column = 5, padx = 10, pady = 10)
 
         self.preset = tk.StringVar()
         self.preset.set("Select preset...")
@@ -168,6 +172,16 @@ class Table_Entry(tk.Frame):
                     elif(row == 2):
                         self.d_label = tk.Label(self, text=(""))
                         self.d_label.grid(row=row, column=col)
+
+    def zero_tpr(self):
+        for v in range(20):
+            # Clearing the entry tables
+            self.r_entries[v].delete(0,tk.END)
+
+            # Adding new values to entry table
+            self.r_entries[v].insert(0,'0.0')
+        self.label['text'] = "TPR zeroed"
+        self.label['bg'] = green
 
     def copy_tpr(self):
         if(self.app.tpr == []):

@@ -30,7 +30,7 @@ class Application(tk.Tk):
         self.running = False
         self.clamping = False
         
-        # self.controller, self.tdac = init_controller()
+        # self.controller, self.tdacemet = init_controller()
 
         self.voltages = []
         self.times = []
@@ -87,6 +87,7 @@ class Application(tk.Tk):
 
     def relay(self, v):
         # Set to high to close, low to open
+        self.controller.setDOState(3, state = v)
         self.controller.setDOState(2, state = v)
 
     def make_copier(self, row):
