@@ -7,7 +7,7 @@ Install anaconda and set up a vitual environment following these instructions: h
 1. Click the green "Code" button, click "Download ZIP"
 2. Unzip the files and move to your choice of location
 3. Ensure that the computer has LabJack software installed
-   1. Installer can be found at [https://labjack.com/support/software/installers](https://labjack.com/pages/support?doc=/software-driver/installer-downloads/ud-software-installers-u3-u6-ue9/)
+   1. Installer can be found at https://labjack.com/pages/support?doc=/software-driver/installer-downloads/ud-software-installers-u3-u6-ue9/
    2. Follow the onscreen instructions to install LabJack software
 
 From a terminal:
