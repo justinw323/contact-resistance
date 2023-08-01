@@ -38,3 +38,8 @@ From a terminal:
    2. Select the data and go to the Data tab in the Excel sheet, and click "Text to Columns".
    3. Select "Delimited" and hit "Next", and on the following space check the "Space" option. Hit "Finish". The data should now be in three separate cells
 7. If the previous run was a calibration run, you can return to the Parameters page and press "Copy TPR" to copy the TPR data from the last measurement into the GDL Through Plate Resistance column.
+
+# Notes
+1. To clamp the electrodes using the application, click "Pressure on" to turn on the air, then turn the lever to lower the clamp. Turn the lever back to raise the clamp again. If you click "Pressure off", the clamp will be stuck in its current position until you turn the air back on (either with the application or manually) and turn the lever.
+2. The application will automatically clamp when starting a measurement, but you should clamp the sample beforehand to make sure that everything is lined up.
+3. You can have multiple contact resistance applications open at a time, but only one can be connected to the LabJack. The application will open a connection to the Labjack when you hit "Start" (to start a measurement) or hit "Pressure on" (to turn the air on). The connection will close once either the measurement stops, you hit "Stop" during an active measurement, or you hit "Pressure off" after hitting "Pressure on". If there is not active measurement being performed, and the application is not sending a signal to clamp, then the application has no open connection with the Labjack, and you can use another application to connect to it (ie. to run a measurement).
