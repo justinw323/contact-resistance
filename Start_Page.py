@@ -59,7 +59,7 @@ class Start_Page(tk.Frame):
         # pv = ttk.Button(self, text = 'pv', command = self.print_voltages)
         # pv.grid(row=23, column=3, padx = 10, pady = 10)
 
-        self.cl = ttk.Button(self, text = 'Clamp', command = app.clamp_unclamp)
+        self.cl = ttk.Button(self, text = 'Pressure on', command = app.clamp_unclamp)
         self.cl.grid(row=22, column=3, padx = 10, pady = 10)
 
         fileField = tk.Label(self, text='File Name:')
